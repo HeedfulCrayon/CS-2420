@@ -162,34 +162,28 @@ void singlyLinkedList<T>::insertLast(const T& value) {
 template <typename T>
 void singlyLinkedList<T>::insertValueAt(const unsigned int index, const T& value)
 {
-	if (index > count + 2)// index greater than list allows
+	if (index > count + 1)// index greater than list allows
 	{
 		return;
 	}
-	nodeType<T>* temp = new nodeType<T>();
+	nodeType<T>* temp = new nodeType<T>();// create new node
 	temp->info = value;
 	temp->link = NULL;
-	if (first == NULL)// empty list scenario
-	{
-		first = temp;
-		count++;
-		return;
-	}
-	if (index == 0)// inserting at 0
+	if (index == 0)// inserting at 0 or empty list scenario
 	{
 		temp->link = first;
 		first = temp;
 		count++;
 		return;
 	}
-	nodeType<T>* cur = first;
+	nodeType<T>* cur = first;// cycle through nodes
 	nodeType<T>* prev = NULL;
 	for (int i = 0; i < index; i++)
 	{
 		prev = cur;
 		cur = cur->link;
 	}
-	temp->link = prev->link;
+	temp->link = prev->link;// insert new node and links
 	prev->link = temp;
 	count++;
 
@@ -205,12 +199,11 @@ T singlyLinkedList<T>::getValueAt(const unsigned int index)
 	{
 		throw 1;
 	}
-	nodeType<T>* cur = first;
+	nodeType<T>* cur = first;// cycle through list
 	for (int i = 0; i < index; i++)
 	{
 		cur = cur->link;
 	}
-	//This is not what you should return, but this just helps it compile
 	return cur->info;
 }
 
@@ -218,16 +211,15 @@ T singlyLinkedList<T>::getValueAt(const unsigned int index)
 template <typename T>
 T& singlyLinkedList<T>::operator[](const unsigned int index)
 {
-	if (index < 0 || index >= count) {
+	if (index < 0 || index >= count)// index larger than count
+	{
 		throw 1;
 	}
-	nodeType<T>* cur = first;
+	nodeType<T>* cur = first;// cycle through list
 	for (int i = 0; i < index; i++)
 	{
 		cur = cur->link;
 	}
-
-	//This is not what you should return, but this just helps it compile
 	return cur->info;
 }
 
@@ -235,64 +227,58 @@ T& singlyLinkedList<T>::operator[](const unsigned int index)
 template <typename T>
 void singlyLinkedList<T>::deleteValueAt(const unsigned int index)
 {
-	if (index >= count) {
+	if (index >= count || first == NULL)// index greater than count
+	{
 		return;
 	}
 	nodeType<T>* cur = first;
 	if (index == 0)// index is 0
 	{
-		if (first == NULL)
-		{
-			return;
-		}
 		first = cur->link;
-		delete cur;
-		count--;
-		return;
 	}
-	nodeType<T>* prev = NULL;
-	for (int i = 0; i < index; i++)
+	else// index at any other location
 	{
-		prev = cur;
-		cur = cur->link;
+		nodeType<T>* prev = NULL;
+		for (int i = 0; i < index; i++)// loop through list
+		{
+			prev = cur;
+			cur = cur->link;
+		}
+		prev->link = cur->link;
 	}
-	prev->link = cur->link;
 	delete cur;
 	count--;
-
 }
 
 //TODO: Complete this method
 template <typename T>
 void singlyLinkedList<T>::deleteAllOfOccurrence(const T& value)
 {
-	nodeType<T>* cur = first;
+	nodeType<T>* cur = first;// Loop through list once
 	nodeType<T>* prev = NULL;
 	while (cur != NULL)
 	{
-		if (cur->info == value)
+		if (cur->info == value)// when value is found
 		{
-			if (cur == first)
+			if (cur == first)// if value is the first in the list
 			{
 				first = cur->link;
 				delete cur;
 				cur = first;
 			}
-			else
+			else// if value is in any other spot
 			{
 				prev->link = cur->link;
 				delete cur;
 				cur = prev->link;
 			}
-			
 		}
-		else
+		else// go to next node
 		{
 			prev = cur;
 			cur = cur->link;
 		}
 	}
-
 }
 
 //This method helps return a string representation of all nodes in the linked list, do not modify.

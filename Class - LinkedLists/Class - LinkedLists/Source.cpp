@@ -7,14 +7,15 @@ template <typename T>
 class Node {
 public:
 	T data;
-	Node* link;
+	Node* forward;
+	Node* backward;
 };
 
 template <typename T>
 class LinkedList {
 public:
 	LinkedList();
-	//~LinkedList();
+	~LinkedList();
 	void insertLast(const T& item);
 	void insertFirst(const T& item);
 	void deleteFirst();
@@ -34,10 +35,24 @@ LinkedList<T>::LinkedList() {
 }
 
 template <typename T>
+LinkedList<T>::~LinkedList() {
+	while (front != NULL)
+	{
+		Node<T>* temp;
+		temp = front;
+		front = front->forward;
+		delete temp;
+	}
+	back = NULL;
+	count = 0;
+}
+
+template <typename T>
 void LinkedList<T>::insertLast(const T& item) {
 	Node<T>* temp = new Node<T>();
 	temp->data = item;
-	temp->link = NULL;
+	temp->forward = NULL;
+	temp->backward = NULL;
 	if (front == NULL)
 	{
 		//empty list scenario
@@ -46,7 +61,8 @@ void LinkedList<T>::insertLast(const T& item) {
 	else
 	{
 		//at least one node scenario
-		back->link = temp;
+		back->forward = temp;
+		temp->backward = back;
 	}
 	back = temp;
 	count++;
@@ -56,12 +72,20 @@ template <typename T>
 void LinkedList<T>::insertFirst(const T& item) {
 	Node<T>* temp = new Node<T>();
 	temp->data = item;
-	temp->link = front;
-	front = temp;
+	temp->forward = NULL;
+	temp->backward = NULL;
 	if (back == NULL)
 	{
+		//empty list scenario
 		back = temp;
 	}
+	else
+	{
+		//at least one node scenario
+		front->backward = temp;
+		temp->forward = front;
+	}
+	front = temp;
 	count++;
 }
 template <typename T>
@@ -71,10 +95,14 @@ void LinkedList<T>::deleteFirst() {
 		return;
 	}
 	Node<T>* temp = front;
-	front = front->link;
+	front = front->forward;
 	if (front == NULL)	//If list has only one node
 	{
 		back = NULL;
+	}
+	else
+	{
+		front->backward = NULL;
 	}
 	delete temp;
 	count--;
@@ -82,26 +110,21 @@ void LinkedList<T>::deleteFirst() {
 
 template <typename T>
 void LinkedList<T>::deleteLast() {
-	if (front == NULL)	// empty list scenario
+	if (back == NULL)	// If the list is empty
 	{
 		return;
 	}
-	if (front == back)	// one node scenario
+	Node<T>* temp = back;
+	back = back->backward;
+	if (back == NULL)	//If list has only one node
 	{
-		delete back;
 		front = NULL;
-		back = NULL;
-		count--;
-		return;
 	}
-	Node<T>* cur = front;	// two or more node scenario
-	while (cur->link != back)
+	else
 	{
-		cur = cur->link;
-	}	//cur should be at the second to last node
-	delete back;
-	back = cur;
-	back->link = NULL;
+		back->forward = NULL;
+	}
+	delete temp;
 	count--;
 }
 
@@ -112,39 +135,43 @@ void LinkedList<T>::deleteItem(const T& item) {
 		return;
 	}
 	Node<T>* cur = front;
-	Node<T>* prev = NULL;
-	while (cur != NULL && cur->data != item) {
-		prev = cur;
-		cur = cur->link;
+	while (cur != NULL && cur->data != item)
+	{
+		cur = cur->forward;
 	}
 	if (cur->data == item)
 	{
-		// check for only node scenario
-		if (front == back)
+		if (front == back)// single node list
 		{
 			front = NULL;
 			back = NULL;
+			cur->forward = NULL;
+			cur->backward = NULL;
 			delete cur;
 			count--;
-			return;
 		}
-		//prev is behind cur and cur is the node to delete
-		if (prev == NULL)	// First node scenario
+		if (cur->backward == NULL)// First node scenario
 		{
-			front = front->link;
+			front = front->forward;
+			front->backward = NULL;
 			delete cur;
 			count--;
 			return;
 		}
-		prev->link = cur->link;
+		if (cur->forward == NULL)// Last node scenario
+		{
+			back = back->backward;
+			back->forward = NULL;
+			delete cur;
+			count--;
+			return;
+		}
+		cur->backward->forward = cur->forward;// Middle node scenario
+		cur->forward->backward = cur->backward;
+		
 		delete cur;
-		if (prev->link == NULL)	// Last node scenario
-		{
-			back = prev;
-		}
 		count--;
 	}
-	
 }
 
 int main() {

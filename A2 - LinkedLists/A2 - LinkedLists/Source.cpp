@@ -156,8 +156,6 @@ void singlyLinkedList<T>::insertLast(const T& value) {
 	count++;
 }
 
-
-
 //TODO: Complete this method
 template <typename T>
 void singlyLinkedList<T>::insertValueAt(const unsigned int index, const T& value)

@@ -249,7 +249,10 @@ Iterator<T>& Iterator<T>::operator++() {
 	{
 		this->offTheRightEdge = true;
 	}
-	this->current = this->current->forward;
+	else
+	{
+		this->current = this->current->forward;
+	}
 	return *this;
 
 }
@@ -263,7 +266,10 @@ Iterator<T> Iterator<T>::operator++(int) {
 	{
 		this->offTheRightEdge = true;
 	}
-	this->current = this->current->forward;
+	else
+	{
+		this->current = this->current->forward;
+	}
 	return temp;
 
 }
@@ -276,7 +282,10 @@ Iterator<T>& Iterator<T>::operator--() {
 	{
 		this->offTheRightEdge = false;
 	}
-	this->current = this->current->backward;
+	else
+	{
+		this->current = this->current->backward;
+	}
 	return *this;
 }
 
@@ -285,6 +294,10 @@ template <typename T>
 bool Iterator<T>::operator!=(const Iterator<T>& right) const {
 	//return false;
 	//TODO
+	if (current == NULL && right.current == NULL)
+	{
+		return false;
+	}
 	if (this->current == right.current && this->offTheRightEdge == right.offTheRightEdge)
 	{
 		return false;
@@ -306,7 +319,11 @@ bool Iterator<T>::operator==(const Iterator<T>& right) const {
 template <typename T>
 void ourReverse(T& begin, T& end) {
 	//TODO
-
+	while (begin != end)
+	{
+		swap(begin, end);
+		//need to increment both ends
+	}
 }
 //----------------------------------------------------------------------------------------------------------------------------------------
 //This helps with testing, do not modify.

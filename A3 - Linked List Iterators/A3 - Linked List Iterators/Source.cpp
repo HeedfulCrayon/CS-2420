@@ -243,7 +243,7 @@ T& Iterator<T>::operator*() const{
 
 template <typename T>
 Iterator<T>& Iterator<T>::operator++() {
-	//TODO------------------------------------NEED Work
+	//TODO-------------------------------------DONE
 	
 	if (this->current->forward == NULL)
 	{
@@ -259,7 +259,7 @@ Iterator<T>& Iterator<T>::operator++() {
 
 template <typename T>
 Iterator<T> Iterator<T>::operator++(int) {
-	//TODO------------------------------------NEED Work
+	//TODO------------------------------------DONE
 	Iterator<T> temp;
 	temp.current = this->current;
 	if (this->current->forward == NULL)
@@ -277,7 +277,7 @@ Iterator<T> Iterator<T>::operator++(int) {
 //TODO
 template <typename T>
 Iterator<T>& Iterator<T>::operator--() {
-	//TODO------------------------------------NEED Work
+	//TODO------------------------------------DONE
 	if (this->offTheRightEdge == true)
 	{
 		this->offTheRightEdge = false;
@@ -321,9 +321,14 @@ void ourReverse(T& begin, T& end) {
 	//TODO
 	while (begin != end)
 	{
-		swap(begin, end);
-		//need to increment both ends
+		swap(begin.operator*(), end.operator*());
+		begin.operator++();
+
+		end.operator--();
 	}
+
+
+
 }
 //----------------------------------------------------------------------------------------------------------------------------------------
 //This helps with testing, do not modify.
@@ -397,7 +402,7 @@ void testIteratorFundamentals(){
 	}
 
 	//Again test the != operator
-	++iter;
+ 	++iter;
 	if (iter != anotherIter) {
 		cout << "Passed testIteratorFundamentals #4" << endl;
 	}

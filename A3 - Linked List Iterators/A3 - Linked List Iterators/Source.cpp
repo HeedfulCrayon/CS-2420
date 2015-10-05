@@ -244,16 +244,22 @@ T& Iterator<T>::operator*() const{
 template <typename T>
 Iterator<T>& Iterator<T>::operator++() {
 	//TODO-------------------------------------DONE
-	
-	if (this->current->forward == NULL)
+	if (this->offTheRightEdge != true)
 	{
-		this->offTheRightEdge = true;
+		if (this->current->forward == NULL)
+		{
+			this->offTheRightEdge = true;
+		}
+		else
+		{
+			this->current = this->current->forward;
+		}
+		return *this;
 	}
 	else
 	{
-		this->current = this->current->forward;
+		return *this;
 	}
-	return *this;
 
 }
 
@@ -261,7 +267,7 @@ template <typename T>
 Iterator<T> Iterator<T>::operator++(int) {
 	//TODO------------------------------------DONE
 	Iterator<T> temp;
-	temp.current = this->current;
+	temp = *this;
 	if (this->current->forward == NULL)
 	{
 		this->offTheRightEdge = true;
@@ -319,15 +325,19 @@ bool Iterator<T>::operator==(const Iterator<T>& right) const {
 template <typename T>
 void ourReverse(T& begin, T& end) {
 	//TODO
+	--end;
 	while (begin != end)
 	{
-		swap(begin.operator*(), end.operator*());
-		begin.operator++();
-
-		end.operator--();
+		if (++begin == end)
+		{
+			--begin;
+			return;
+		}
+		--begin;
+		swap(*begin, *end);
+		++begin;
+		--end;
 	}
-
-
 
 }
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -565,7 +575,7 @@ void testIteratorDecrement(){
 
 	//Get an Iterator which points at the end of the list
 	Iterator<int> iter = d->end();
-	--iter;  //We have to do a decrement otherwise it crashes
+	--iter;
 
 	//Test that it does point to the first
 	checkTest("testIteratorsDecrement #1", 20, *iter);

@@ -193,7 +193,7 @@ T singlyLinkedList<T>::getValueAt(const unsigned int index)
 {
 	//all this code
 	//does stuff
-	if (index >= count)// index larger than list
+	if (index > count)// index larger than list
 	{
 		throw 1;
 	}
@@ -209,7 +209,7 @@ T singlyLinkedList<T>::getValueAt(const unsigned int index)
 template <typename T>
 T& singlyLinkedList<T>::operator[](const unsigned int index)
 {
-	if (index < 0 || index >= count)// index larger than count
+	if (index < 0 || index > count)// index larger than count
 	{
 		throw 1;
 	}
@@ -262,12 +262,14 @@ void singlyLinkedList<T>::deleteAllOfOccurrence(const T& value)
 			{
 				first = cur->link;
 				delete cur;
+				count--;
 				cur = first;
 			}
 			else// if value is in any other spot
 			{
 				prev->link = cur->link;
 				delete cur;
+				count--;
 				cur = prev->link;
 			}
 		}

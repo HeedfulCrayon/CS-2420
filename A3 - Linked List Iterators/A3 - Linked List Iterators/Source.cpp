@@ -331,6 +331,7 @@ void ourReverse(T& begin, T& end) {
 		if (++begin == end)
 		{
 			--begin;
+			swap(*begin, *end);
 			return;
 		}
 		--begin;

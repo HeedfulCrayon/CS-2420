@@ -291,11 +291,12 @@ void arrayHashTable<KEY, VALUE>::add(const KEY& key, const VALUE& value)  {
 		}
 		else 
 		{
+			possibleBucket++;
 			if (possibleBucket == arraySize)
 			{
 				possibleBucket = 0;
 			}
-			possibleBucket++;
+			
 		}
 	} while (initBucket != possibleBucket);
 	

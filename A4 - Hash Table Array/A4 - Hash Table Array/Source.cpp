@@ -289,18 +289,12 @@ void arrayHashTable<KEY, VALUE>::add(const KEY& key, const VALUE& value)  {
 			statusArray[possibleBucket] = 1;
 			return;
 		}
-		else 
+		possibleBucket++;
+		if (possibleBucket == arraySize)
 		{
-			possibleBucket++;
-			if (possibleBucket == arraySize)
-			{
-				possibleBucket = 0;
-			}
-			
+			possibleBucket = 0;
 		}
 	} while (initBucket != possibleBucket);
-	
-
 }
 
 template <typename KEY, typename VALUE>
@@ -317,7 +311,7 @@ bool arrayHashTable<KEY, VALUE>::exists(const KEY& key) const {
 	int initBucket = possibleBucket;
 	if (statusArray[possibleBucket] == 1 || statusArray[possibleBucket] == -1)
 	{
-		while (statusArray[possibleBucket] != 0 || initBucket == possibleBucket)
+		while (statusArray[possibleBucket] != 0)//statusArray[possibleBucket] != 0 || initBucket == possibleBucket
 		{
 			if (statusArray[possibleBucket] == 1)
 			{
@@ -330,6 +324,10 @@ bool arrayHashTable<KEY, VALUE>::exists(const KEY& key) const {
 			if (possibleBucket == arraySize)
 			{
 				possibleBucket = 0;
+			}
+			if (possibleBucket == initBucket)
+			{
+				return false;
 			}
 		}
 	}

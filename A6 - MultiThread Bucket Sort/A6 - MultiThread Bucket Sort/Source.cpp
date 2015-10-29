@@ -212,6 +212,7 @@ int numBuckets;
 int numThreads;
 BucketsCollection *globalBuckets;
 unsigned long ULONGMAX = 4294967295;
+mutex myMutex;
 
 //*** Provide methods for the bucket class ***
 BucketsCollection::BucketsCollection(int bucketCapacity, int numBuckets) {
@@ -353,37 +354,43 @@ void createList() {
 	}
 }
 
-void placeIntoBuckets() {
-
+void placeIntoBuckets(int threadID) {
+	int beginIndex = (listSize * threadID) / numThreads;
+	int endIndex = (listSize * (threadID + 1)) / numThreads;
+	BucketsCollection *localBuckets = new BucketsCollection((endIndex - beginIndex), numBuckets);
 	//TODO: Put the values into the appropriate buckets.
-	for (int i = 0; i < listSize; i++)
+	for (int i = beginIndex; i < endIndex; i++)
 	{
 		int targetBucket = (list[i]) / (ULONGMAX / numBuckets);
-		globalBuckets->addItem(targetBucket, list[i]);
+		localBuckets->addItem(targetBucket, list[i]);
 	}
+	myMutex.lock();
+	globalBuckets->copyOneBucketsIntoAnotherBuckets(*localBuckets);
+	myMutex.unlock();
+	delete localBuckets;
 }
 
 
-void sortEachBucket() {
+void sortEachBucket(int threadID) {
 
 	//TODO: Sort each individual bucket
-	for (int i = 0; i < numBuckets; i++)
-	{
-		recQuickSort(globalBuckets->getBucketArray(i), 0, globalBuckets->getNumItemsInABucket(i));
-	}
+	recQuickSort(globalBuckets->getBucketArray(threadID), 0, globalBuckets->getNumItemsInABucket(threadID));
 
 }
 
 
-void combineBuckets() {
+void combineBuckets(int threadID) {
 
 	//TODO: Copy each bucket back out to the original list[] array
 	int indexOffset = 0;
-	for (int i = 0; i < numBuckets; i++)
+	for (int i = 0; i < threadID; i++)
 	{
-		globalBuckets->copyBucketToAnotherArray(i, list, indexOffset);
-		indexOffset += globalBuckets->getNumItemsInABucket(i);
+		indexOffset = indexOffset + globalBuckets->getNumItemsInABucket(i);
 	}
+	
+	
+
+	globalBuckets->copyBucketToAnotherArray(threadID, list, indexOffset);
 
 }
 
@@ -392,7 +399,10 @@ void bucketSort() {
 
 	thread *threads = new thread[numThreads];
 	//For the upcoming homeowork assignment, I think it will help you the most to split your work into these three functions.  
-	placeIntoBuckets();
+	for (int i = 0; i < numThreads; i++)
+	{
+		threads[i] = thread(placeIntoBuckets, i);
+	}
 
 	for (int i = 0; i < numThreads; i++)
 	{
@@ -401,13 +411,29 @@ void bucketSort() {
 
 	//create thread objects
 	//call sortEachBucket in parallel, pass in your i from your loop
-	sortEachBucket();
+
+	for (int i = 0; i < numThreads; i++)
+	{
+		threads[i] = thread(sortEachBucket, i);
+	}
 	//join and delete threads
+	for (int i = 0; i < numThreads; i++)
+	{
+		threads[i].join();
+	}
 
 	//create thread objects
 	//call combineBuckets in parallel, pass in your i from your loop
-	combineBuckets();
+	for (int i = 0; i < numThreads; i++)
+	{
+		threads[i] = thread(combineBuckets, i);
+	}
 	//join and delete threads
+	for (int i = 0; i < numThreads; i++)
+	{
+		threads[i].join();
+	}
+	delete[] threads;
 
 }
 

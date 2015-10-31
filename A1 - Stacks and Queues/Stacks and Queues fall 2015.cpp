@@ -143,6 +143,11 @@ template <typename T>
 unsigned int CustomQueue<T>::size(){
 	return currentSize;
 }
+template <typename T>
+T CustomQueue<T>::operator[](const unsigned int index) 
+{
+	return arr[index];
+}
 
 //**********************************
 //Write your code above here

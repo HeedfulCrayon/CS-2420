@@ -18,10 +18,14 @@ public:
 	sortedBinaryTree();
 	~sortedBinaryTree();
 	void insertItem(const T& item);
+	void preOrder();
 	void inOrder();
+	void postOrder();
 private:
 	Node<T> * root;
+	void preOrder(Node<T> * ptr);
 	void inOrder(Node<T> * ptr);
+	void postOrder(Node<T> * ptr);
 	void deleteTree(Node<T> * ptr);
 
 };
@@ -107,6 +111,36 @@ void sortedBinaryTree<T>::deleteTree(Node<T> * ptr) {
 	}
 }
 
+template <typename T>
+void sortedBinaryTree<T>::preOrder() {
+	preOrder(root);
+}
+
+template <typename T>
+void sortedBinaryTree<T>::preOrder(Node<T> * ptr) {
+	if (ptr != NULL)			//Recursive
+	{
+		cout << ptr->data << " ";	//Display
+		preOrder(ptr->llink);	//Go left
+		preOrder(ptr->rlink);	//Go right
+	}
+}
+
+template <typename T>
+void sortedBinaryTree<T>::postOrder() {
+	postOrder(root);
+}
+
+template <typename T>
+void sortedBinaryTree<T>::postOrder(Node<T> * ptr) {
+	if (ptr != NULL)			//Recursive
+	{
+		postOrder(ptr->llink);	//Go left
+		postOrder(ptr->rlink);	//Go right
+		cout << ptr->data << " ";	//Display
+	}
+}
+
 int main() {
 	sortedBinaryTree<int> t;
 	t.insertItem(10);
@@ -118,7 +152,11 @@ int main() {
 	t.insertItem(07);
 	t.insertItem(11);
 
+	t.preOrder();
+	cout << endl;
 	t.inOrder();
+	cout << endl;
+	t.postOrder();
 
 	_getch();
 	return 0;

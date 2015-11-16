@@ -16,18 +16,24 @@ template <typename T>
 class sortedBinaryTree {
 public:
 	sortedBinaryTree();
-	//~sortedBinaryTree();
+	~sortedBinaryTree();
 	void insertItem(const T& item);
 	void inOrder();
 private:
 	Node<T> * root;
 	void inOrder(Node<T> * ptr);
+	void deleteTree(Node<T> * ptr);
 
 };
 
 template <typename T>
 sortedBinaryTree<T>::sortedBinaryTree() {
 	root = NULL;
+}
+
+template <typename T>
+sortedBinaryTree<T>::~sortedBinaryTree() {
+	deleteTree(root);
 }
 
 template <typename T>
@@ -91,6 +97,15 @@ void sortedBinaryTree<T>::inOrder(Node<T> * ptr) {
 	}
 }
 
+template <typename T>
+void sortedBinaryTree<T>::deleteTree(Node<T> * ptr) {
+	if (ptr != NULL)
+	{
+		deleteTree(ptr->llink);
+		deleteTree(ptr->rlink);
+		delete ptr;
+	}
+}
 
 int main() {
 	sortedBinaryTree<int> t;
@@ -108,3 +123,5 @@ int main() {
 	_getch();
 	return 0;
 }
+
+// 111314 participation code 11/4/2015

@@ -113,7 +113,22 @@ void processMath::postOrderTraversal(Node<string> * ptr) {
 }
 
 bool processMath::isDigit(char c) {
-	return isdigit(c);
+	switch (c)
+	{
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9': return true;
+		break;
+	default: return false;
+		break;
+	}
 }
 
 bool processMath::isOperator(char c) {
@@ -134,10 +149,9 @@ void processMath::expressionProcessor(string& expression) {
 	{
 		this->expression = expression;
 		position = 0;
-		Node<string> * temp;
-		temp->llink = NULL;
-		temp->rlink = NULL;
-		root = temp;
+		root = new Node<string>();
+		root->rlink = NULL;
+		root->llink = NULL;
 		expressionProcessor(root);
 	}
 }
@@ -147,16 +161,16 @@ void processMath::expressionProcessor(Node<string> * ptr) {
 	{
 		if (expression[position] == '(')
 		{
-			Node<string> * temp;
+			Node<string> * temp = new Node<string>();
 			temp->llink = NULL;
 			temp->rlink = NULL;
 			ptr->llink = temp;
 			position++;
-			expressionProcessor(temp->llink);
+			expressionProcessor(temp);
 		}
 		if (isDigit(expression[position]))
 		{
-			string temp(1, expression[position]);
+			string temp(1,expression[position]);
 			position++;
 			while (isDigit(expression[position]))
 			{
@@ -169,17 +183,19 @@ void processMath::expressionProcessor(Node<string> * ptr) {
 		if (isOperator(expression[position]))
 		{
 			ptr->data = expression[position];
-			Node<string> * temp;
+			Node<string> * temp = new Node<string>();
 			temp->llink = NULL;
 			temp->rlink = NULL;
 			ptr->rlink = temp;
 			position++;
-			expressionProcessor(temp->rlink);
+			expressionProcessor(temp);
 		}
 		if (expression[position] == ')')
 		{
+			position++;
 			return;
 		}
+		position++;
 	}
 }
 
@@ -192,31 +208,34 @@ void processMath::computeExpression(Node<string> *p) {
 	if (p != NULL) {
 		computeExpression(p->llink);
 		computeExpression(p->rlink);
+		mathStack.push(p->data);
 		if (isOperator(p->data[0]))
 		{
+			string temp = mathStack.top();
+			mathStack.pop();
 			double num1 = castStrToDouble(mathStack.top());
 			mathStack.pop();
 			double num2 = castStrToDouble(mathStack.top());
 			mathStack.pop();
-			if (p->data == "^")
+			if (temp == "^")
 			{
-				pow(num1, num2);
+				mathStack.push(castDoubleToStr(pow(num2, num1)));
 			}
-			else if (p->data == "+")
+			else if (temp == "+")
 			{
-				mathStack.push(castDoubleToStr(num1 + num2));
+				mathStack.push(castDoubleToStr(num2 + num1));
 			}
-			else if (p->data == "-")
+			else if (temp == "-")
 			{
-				mathStack.push(castDoubleToStr(num1 - num2));
+				mathStack.push(castDoubleToStr(num2 - num1));
 			}
-			else if (p->data == "/")
+			else if (temp == "/")
 			{
-				mathStack.push(castDoubleToStr(num1 / num2));
+				mathStack.push(castDoubleToStr(num2 / num1));
 			}
-			else if (p->data == "*")
+			else if (temp == "*")
 			{
-				mathStack.push(castDoubleToStr(num1 * num2));
+				mathStack.push(castDoubleToStr(num2 * num1));
 			}
 		}
 	}

@@ -20,6 +20,13 @@ vector<graphEdge> edges;
 int numEdges;
 int numNodes;
 
+int* graphWeights;
+int* columns;
+int* rows;
+int gSize;
+
+int* smallestWeight;
+
 const int LARGE_NUMBER = 99999999;
 
 //The class for an edge object.  
@@ -51,6 +58,21 @@ void pressAnyKeyToContinue() {
 #endif
 }
 
+int getWeights(int vertex, int dest) {
+	int lTemp, rTemp;
+	
+	lTemp = rows[vertex];
+	rTemp = rows[vertex + 1];
+	for (lTemp; lTemp < rTemp; lTemp++)
+	{
+		if (columns[lTemp] == dest)
+		{
+			return graphWeights[lTemp];
+		}
+	}
+	return 99999999;
+}
+
 void shortestPath(int vertex) {
 
 	//TODO: Fix the book's code so that it works without data
@@ -58,7 +80,7 @@ void shortestPath(int vertex) {
 	//The argument is the vertex to search from
 	for (int j = 0; j < gSize; j++) {
 		//intialization step
-		smallestWeight[j] = weights[vertex][j];
+		smallestWeight[j] = getWeights(vertex,j);
 	}
 	//continue initializing
 	bool *weightFound = new bool[gSize];
@@ -105,8 +127,8 @@ void shortestPath(int vertex) {
 			//using v, at a better weight than what we already know.
 			for (int j = 0; j < gSize; j++) {
 				if (!weightFound[j]) {
-					if (minWeight + weights[v][j] < smallestWeight[j]) {
-						smallestWeight[j] = minWeight + weights[v][j];
+					if (minWeight + getWeights(v,j) < smallestWeight[j]) {
+						smallestWeight[j] = minWeight + getWeights(v,j);
 					}
 				}
 			}
@@ -253,7 +275,29 @@ void createCsrArrays() {
 	//Here would also be a good place to size the smallestWeight array.  It has the same size as 
 	//graphWeights and columns.  Also make sure you declare it globally, just as you did the 
 	//prior three arrays.
+	gSize = numNodes;
 
+	smallestWeight = new int[numEdges];
+	graphWeights = new int[numEdges];
+	columns = new int[numEdges];
+	rows = new int[numNodes + 1];
+
+	int rowTemp = -1;
+	int count = 0;
+	int j = 0;
+	for (int i = 0; i < numEdges; i++)
+	{
+		if (rowTemp != edges[i].sourceNode)
+		{
+			rows[j] = count;
+			rowTemp = edges[i].sourceNode;
+			j++;
+		}
+		graphWeights[i] = edges[i].weight;
+		columns[i] = edges[i].destNode;
+		count++;
+	}
+	rows[j] = numEdges;
 
 }
 
@@ -261,7 +305,10 @@ void deleteArrays() {
 	//TODO:
 
 	//Delete your arrays you created in createCsrArrays()
-
+	delete[] smallestWeight;
+	delete[] graphWeights;
+	delete[] columns;
+	delete[] rows;
 }
 
 int main() {
